@@ -30,7 +30,9 @@ Process::Process(const std::string& path) {
         execvp(args[0], args);
     } else {                                            // This is parent-process
         ::close(parent_to_child_[0]);
+        parent_to_child_[0] = -1;
         ::close(child_to_parent_[1]);
+        child_to_parent_[1] = -1;
     }
 }
 
@@ -79,12 +81,11 @@ void Process::readExact(void* data, size_t len) {
 }
 
 void Process::closeStdin() {
-    if (!is_stdin_closed_) {
-        if (fork_pid_) {                                // Parent
+    if (fork_pid_) {                                    // Parent
+        if (parent_to_child_[1] >= 0) {
             ::close(parent_to_child_[1]);
+            parent_to_child_[1] = -1;
         }
-
-        is_stdin_closed_ = true;
     }
 }
 
@@ -103,19 +104,20 @@ void Process::close() {
 
 void Process::closePipes() {
     for (int i = 0; i < PIPE_SIZE; ++i) {
-        ::close(parent_to_child_[i]);
-        ::close(child_to_parent_[i]);
+        if (parent_to_child_[i] >= 0) {
+            ::close(parent_to_child_[i]);
+            parent_to_child_[i] = -1;
+        }
+        if (child_to_parent_[i] >= 0) {
+            ::close(child_to_parent_[i]);
+            child_to_parent_[i] = -1;
+        }
     }
 }
 
 Process::~Process() {
     if (fork_pid_) {
-        ::close(child_to_parent_[0]);
-
-        if (!is_stdin_closed_) {
-            ::close(parent_to_child_[1]);
-        }
-
+        this->closePipes();
         this->close();
     }
 }
