@@ -5,6 +5,7 @@
 #define PROCESS_H
 
 #include <string>
+#include <sys/types.h>
 
 class Process {
 public:
@@ -22,12 +23,11 @@ public:
 private:
     void closePipes();
 
-    int fork_pid_;
-    // Pipelines
-    int parent_to_child_[2];
-    int child_to_parent_[2];
+    pid_t fork_pid_;
 
-    bool is_stdin_closed_ = false;
+    // Pipes
+    int parent_to_child_;
+    int child_to_parent_;
 };
 
 #endif //PROCESS_H
