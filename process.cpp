@@ -10,14 +10,19 @@
 #define PIPE_SIZE 2
 
 Process::Process(const std::string& path) {
-    if (pipe(parent_to_child_) == -1 ||
-        pipe(child_to_parent_) == -1 ) {
+    if (pipe(parent_to_child_) == -1) {
         exit(1);
+    }
+    if (pipe(child_to_parent_) == -1) {
+        ::close(parent_to_child_[0]);
+        ::close(parent_to_child_[1]);
+        exit(2);
     }
 
     fork_pid_ = fork();
     if (fork_pid_ < 0) {
-        exit(2);
+        this->closePipes();
+        exit(3);
     }
 
     if (!fork_pid_) {                                   // This is child-process
@@ -68,8 +73,8 @@ size_t Process::read(void* data, size_t len) {
 }
 
 void Process::readExact(void* data, size_t len) {
-    ssize_t read = 0;
-    size_t step;
+    size_t read = 0;
+    ssize_t step;
     while (read != len) {
         step = ::read(child_to_parent_[0], static_cast<char*>(data) + read, 1);
         if (step >= 0) {
@@ -97,7 +102,7 @@ void Process::close() {
         if (child_state) {                              // Process is already done, nothing to close
             return;
         } else {                                        // Still running
-            kill(fork_pid_, SIGINT);
+            ::kill(fork_pid_, SIGINT);
         }
     }
 }
