@@ -5,11 +5,12 @@
 #define PROCESS_H
 
 #include <string>
+#include <vector>
 #include <sys/types.h>
 
 class Process {
 public:
-    explicit Process(const std::string& path);
+    explicit Process(std::vector<std::string> arguments);
     ~Process();
 
     size_t write(const void* data, size_t len);

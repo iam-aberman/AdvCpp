@@ -11,26 +11,26 @@
 
 constexpr size_t PIPE_SIZE = 2u;
 
-Process::Process(const std::string& path) {
-    int parent_to_child[2], child_to_parent[2];
+Process::Process(std::vector<std::string> arguments) {  // Passing by value to avoid extra-copies
+    int parent_to_child[2], child_to_parent[2];         // May be modified
 
     if (::pipe(parent_to_child) == -1) {
-        exit(1);
+        throw std::runtime_error("BAD_PIPE");
     }
-    if (::pipe(child_to_parent) == -1) {                // Redundant, because ::exit();
+    if (::pipe(child_to_parent) == -1) {
         ::close(parent_to_child[0]);
         ::close(parent_to_child[1]);
-        exit(2);
+        throw std::runtime_error("BAD_PIPE");
     }
 
     fork_pid_ = fork();
     if (fork_pid_ < 0) {
-        for (int i = 0; i < PIPE_SIZE; ++i) {           // Redundant, because ::exit();
+        for (int i = 0; i < PIPE_SIZE; ++i) {
             ::close(parent_to_child[i]);
             ::close(child_to_parent[i]);
         }
 
-        exit(3);
+        throw std::runtime_error("BAD_FORK");
     }
 
     if (!fork_pid_) {                                   // This is child-process
@@ -43,11 +43,18 @@ Process::Process(const std::string& path) {
         parent_to_child_ = -1;
         child_to_parent_ = -1;
 
-        std::string exec_path(path);
-        std::vector<char*> args = {exec_path.data(), nullptr};
-        ::execvp(args[0], args.data());
+        std::vector<char*> args(arguments.size() + 1);
+        for (size_t i = 0; i < arguments.size(); ++i) {
+            if (arguments[i].empty()) {
+                throw std::invalid_argument("BAD_ARGV_FOR_EXEC");
+            }
 
-        ::exit(4);
+            args[i] = &arguments[i][0];
+        }
+        args[arguments.size()] = nullptr;
+        execvp(args[0], args.data());
+
+        throw std::runtime_error("EXEC_FAILED");
     } else {                                            // This is parent-process
         ::close(parent_to_child[0]);
         ::close(child_to_parent[1]);
@@ -108,6 +115,10 @@ void Process::close() {
         int status;
         ::kill(fork_pid_, SIGINT);
         ::waitpid(fork_pid_, &status, 0);
+
+        if (status != 0) {
+            throw std::runtime_error("EXEC_ERROR");
+        }
     }
 }
 
@@ -124,7 +135,7 @@ void Process::closePipes() {
 
 Process::~Process() {
     if (fork_pid_) {
-        this->closePipes();
-        this->close();
+        closePipes();
+        close();
     }
 }
