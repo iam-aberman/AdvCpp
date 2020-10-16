@@ -12,7 +12,7 @@
 constexpr size_t PIPE_SIZE = 2u;
 
 Process::Process(const std::string& path, std::vector<std::string> arguments) {  // Passing by value to avoid extra-copies
-    int parent_to_child[2], child_to_parent[2];         // May be modified
+    int parent_to_child[2], child_to_parent[2];                                  // May be modified
 
     if (::pipe(parent_to_child) == -1) {
         throw std::runtime_error("BAD_PIPE");
@@ -46,13 +46,7 @@ Process::Process(const std::string& path, std::vector<std::string> arguments) { 
         std::vector<char*> args;
         std::string path_to_exec(path);
         args.reserve(arguments.size() + 1);
-        /* for (size_t i = 0; i < arguments.size(); ++i) {
-            if (arguments[i].empty()) {
-                ::exit(1);
-            }
-
-            args[i] = &arguments[i][0];
-        } */
+        
         for (std::string& arg : arguments) {
             if (arg.empty()) {
                 ::exit(1);
