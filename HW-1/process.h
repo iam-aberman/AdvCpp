@@ -10,7 +10,7 @@
 
 class Process {
 public:
-    explicit Process(std::vector<std::string> arguments);
+    explicit Process(const std::string& path, std::vector<std::string> arguments);
     ~Process();
 
     size_t write(const void* data, size_t len);

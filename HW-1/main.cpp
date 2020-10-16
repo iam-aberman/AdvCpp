@@ -7,7 +7,7 @@
 int main() {
 
     {
-        Process process({"date"});
+        Process process("date", {"date"});
         std::this_thread::sleep_for(std::chrono::seconds(2));
         process.closeStdin();
 
@@ -22,7 +22,7 @@ int main() {
     {
         const size_t arg_len = 12;
 
-        Process process({"echo", "AdvancedC++!"});
+        Process process("echo", {"echo", "AdvancedC++!"});
         std::string output(12, '\0');
         process.readExact(output.data(), arg_len);
 
