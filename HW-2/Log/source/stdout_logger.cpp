@@ -8,7 +8,7 @@
 
 namespace log {
 
-    StdoutLogger::StdoutLogger() : BaseLogger()
+    StdoutLogger::StdoutLogger(Level level) : BaseLogger(level)
     {
     }
 

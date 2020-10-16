@@ -8,7 +8,7 @@
 
 namespace log {
 
-    StderrLogger::StderrLogger() : BaseLogger()
+    StderrLogger::StderrLogger(Level level) : BaseLogger(level)
     {
     }
 

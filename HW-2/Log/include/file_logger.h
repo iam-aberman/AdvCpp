@@ -13,7 +13,8 @@ namespace log {
 
     class FileLogger : public BaseLogger {
     public:
-        FileLogger(const std::string& filename);
+        FileLogger() = delete;
+        FileLogger(const std::string& filename, Level level = Level::Debug);
         ~FileLogger() override;
 
         void flush() override;

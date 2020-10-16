@@ -8,7 +8,7 @@
 
 namespace log {
 
-    FileLogger::FileLogger(const std::string& filename) : BaseLogger() {
+    FileLogger::FileLogger(const std::string& filename, Level level) : BaseLogger(level) {
         output_file_ = std::ofstream(filename);
         if (!output_file_) {
             throw std::invalid_argument("bad_fstream");

@@ -17,7 +17,7 @@ namespace log {
 
     class BaseLogger {
     public:
-        BaseLogger();
+        BaseLogger(Level level = Level::Debug);
         virtual ~BaseLogger() = default;
 
         void debug(const std::string& msg);

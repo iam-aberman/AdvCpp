@@ -9,7 +9,7 @@ namespace log {
             {Level::Error, "[Error] "}
     };
 
-    BaseLogger::BaseLogger() : level_(Level::Debug)
+    BaseLogger::BaseLogger(Level level) : level_(level)
     {
     }
 
@@ -36,7 +36,5 @@ namespace log {
     Level BaseLogger::get_level() const {
         return level_;
     }
-
-
 
 }

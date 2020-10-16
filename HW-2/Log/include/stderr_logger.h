@@ -2,23 +2,24 @@
 // Created by Osip Chin on 16.10.2020.
 //
 
-#ifndef STDOUT_LOGGER_H
-#define STDOUT_LOGGER_H
+#ifndef STDERR_LOGGER_H
+#define STDERR_LOGGER_H
 
 #include "logger.h"
 
 namespace log {
 
-    class StdoutLogger : public BaseLogger {
+    class StderrLogger : public BaseLogger {
     public:
-        StdoutLogger();
+        StderrLogger(Level level = Level::Debug);
 
         void flush() override;
     private:
         void log(const std::string& msg, Level level) override;
     };
 
+
 }
 
 
-#endif //STDOUT_LOGGER_H
+#endif //STDERR_LOGGER_H
