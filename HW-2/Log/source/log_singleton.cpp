@@ -26,4 +26,8 @@ namespace log {
         logger_ = std::move(logger);
     }
 
+    bool Logger::is_valid() const {
+        return logger_ != nullptr;
+    }
+
 }

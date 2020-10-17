@@ -5,13 +5,13 @@
 #ifndef STDOUT_LOGGER_H
 #define STDOUT_LOGGER_H
 
-#include "logger.h"
+#include "base_logger.h"
 
 namespace log {
 
     class StdoutLogger : public BaseLogger {
     public:
-        StdoutLogger(Level level = Level::Debug);
+        explicit StdoutLogger(Level level = Level::INFO);
 
         void flush() override;
     private:

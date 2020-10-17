@@ -5,7 +5,7 @@
 #ifndef FILE_LOGGER_H
 #define FILE_LOGGER_H
 
-#include "logger.h"
+#include "base_logger.h"
 
 #include <fstream>
 
@@ -14,7 +14,7 @@ namespace log {
     class FileLogger : public BaseLogger {
     public:
         FileLogger() = delete;
-        FileLogger(const std::string& filename, Level level = Level::Debug);
+        FileLogger(const std::string& filename, Level level = Level::INFO);
         ~FileLogger() override;
 
         void flush() override;

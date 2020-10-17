@@ -5,13 +5,15 @@
 #ifndef STDERR_LOGGER_H
 #define STDERR_LOGGER_H
 
-#include "logger.h"
+#include "base_logger.h"
+// This is temporary
+#include <iostream>
 
 namespace log {
 
     class StderrLogger : public BaseLogger {
     public:
-        StderrLogger(Level level = Level::Debug);
+        explicit StderrLogger(Level level = Level::INFO);
 
         void flush() override;
     private:

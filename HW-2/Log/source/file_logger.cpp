@@ -25,7 +25,7 @@ namespace log {
 
     void FileLogger::log(const std::string& msg, Level level) {
         if (level >= get_level()) {
-            output_file_ << level_to_prefix_.at(level) << msg + '\n';
+            output_file_ << msg + '\n';
         }
     }
 

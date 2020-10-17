@@ -1,32 +1,25 @@
-#include "logger.h"
+#include "base_logger.h"
 
 namespace log {
-
-    const std::map<Level, std::string> BaseLogger::level_to_prefix_ = {
-            {Level::Debug, "[Debug] "},
-            {Level::Info, "[Info] "},
-            {Level::Warning, "[Warning] "},
-            {Level::Error, "[Error] "}
-    };
 
     BaseLogger::BaseLogger(Level level) : level_(level)
     {
     }
 
     void BaseLogger::debug(const std::string& msg) {
-        log(msg, Level::Debug);
+        log("[DBG] " + msg, Level::DEBUG);
     }
 
     void BaseLogger::info(const std::string& msg) {
-        log(msg, Level::Info);
+        log("[INFO] " + msg, Level::INFO);
     }
 
     void BaseLogger::warn(const std::string& msg) {
-        log(msg, Level::Warning);
+        log("[WARN] " + msg, Level::WARNING);
     }
 
     void BaseLogger::error(const std::string& msg) {
-        log(msg, Level::Error);
+        log("[ERR] " + msg, Level::ERROR);
     }
 
     void BaseLogger::set_level(Level level) {

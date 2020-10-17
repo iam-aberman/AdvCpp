@@ -18,7 +18,7 @@ namespace log {
 
     void StderrLogger::log(const std::string& msg, Level level) {
         if (level >= get_level()) {
-            std::cerr << level_to_prefix_.at(level) << msg + '\n';
+            std::cerr << msg + '\n';
         }
     }
 
