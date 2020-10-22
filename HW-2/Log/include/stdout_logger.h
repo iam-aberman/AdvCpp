@@ -11,11 +11,9 @@ namespace log {
 
     class StdoutLogger : public BaseLogger {
     public:
-        explicit StdoutLogger(Level level = Level::INFO);
-
-        void flush() override;
-    private:
-        void log(const std::string& msg, Level level) override;
+        explicit StdoutLogger(Level level = Level::INFO) : BaseLogger(std::cout, level)
+        {
+        }
     };
 
 }

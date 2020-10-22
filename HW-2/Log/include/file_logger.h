@@ -8,19 +8,26 @@
 #include "base_logger.h"
 
 #include <fstream>
+#include <stdexcept>
 
 namespace log {
 
     class FileLogger : public BaseLogger {
     public:
         FileLogger() = delete;
-        FileLogger(const std::string& filename, Level level = Level::INFO);
-        ~FileLogger() override;
+        explicit FileLogger(const std::string& filename,
+                            Level level = Level::INFO) : output_file_(filename),
+                                                         BaseLogger(output_file_, level) {
+            if (!output_file_) {
+                throw std::runtime_error("bad_file");
+            }
+        }
 
-        void flush() override;
+        ~FileLogger() override {
+            output_file_.close();
+        }
+
     private:
-        void log(const std::string& msg, Level level) override;
-
         std::ofstream output_file_;
     };
 

@@ -2,7 +2,8 @@
 
 namespace log {
 
-    BaseLogger::BaseLogger(Level level) : level_(level)
+    BaseLogger::BaseLogger(std::ostream& os, Level level) : level_(level),
+                                                            output_(os)
     {
     }
 
@@ -28,6 +29,16 @@ namespace log {
 
     Level BaseLogger::get_level() const {
         return level_;
+    }
+
+    void BaseLogger::flush() {
+        output_.flush();
+    }
+
+    void BaseLogger::log(const std::string& msg, Level level) const {
+        if (level >= level_) {
+            output_ << msg + '\n';
+        }
     }
 
 }

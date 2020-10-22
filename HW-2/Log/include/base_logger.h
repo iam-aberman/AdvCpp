@@ -6,6 +6,7 @@
 #define BASE_LOGGER_H
 
 #include <string>
+#include <iostream>
 
 namespace log {
 
@@ -18,7 +19,9 @@ namespace log {
 
     class BaseLogger {
     public:
-        explicit BaseLogger(Level level = Level::INFO);
+        BaseLogger() = delete;
+        BaseLogger(const BaseLogger&) = delete;
+
         virtual ~BaseLogger() = default;
 
         void debug(const std::string& msg);
@@ -29,12 +32,16 @@ namespace log {
         void set_level(Level level);
         Level get_level() const;
 
-        virtual void flush() = 0;
+        void flush();
 
     protected:
-        virtual void log(const std::string& msg, Level level) = 0;
+        explicit BaseLogger(std::ostream& os, Level level = Level::INFO);
+
+        std::ostream& output_;
 
     private:
+        void log(const std::string& msg, Level level) const;
+
         Level level_;
     };
 
