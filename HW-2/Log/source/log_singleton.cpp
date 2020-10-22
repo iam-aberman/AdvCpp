@@ -24,7 +24,7 @@ namespace log {
     }
 
     void Logger::set_global_logger(std::unique_ptr<BaseLogger> logger) {
-        logger_.reset(logger.release());
+        logger_.swap(logger);
     }
 
     bool Logger::is_valid() const {

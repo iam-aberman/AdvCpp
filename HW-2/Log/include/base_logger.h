@@ -6,7 +6,6 @@
 #define BASE_LOGGER_H
 
 #include <string>
-#include <map>
 
 namespace log {
 
