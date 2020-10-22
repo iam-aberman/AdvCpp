@@ -22,9 +22,6 @@ namespace log {
     }
 
     void set_level(Level level) {
-        if (!Logger::get().is_valid()) {
-            init_with_stderr_logger();
-        }
         Logger::get().get_global_logger()->set_level(level);
     }
 

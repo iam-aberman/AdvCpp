@@ -3,6 +3,7 @@
 //
 
 #include "log_singleton.h"
+#include "stderr_logger.h"
 
 #include <memory>
 
@@ -10,7 +11,7 @@ namespace log {
 
     Logger Logger::instance_ = Logger();
 
-    Logger::Logger() : logger_(nullptr)
+    Logger::Logger() : logger_(std::make_unique<StderrLogger>())
     {
     }
 
@@ -23,7 +24,7 @@ namespace log {
     }
 
     void Logger::set_global_logger(std::unique_ptr<BaseLogger> logger) {
-        logger_ = std::move(logger);
+        logger_.reset(logger.release());
     }
 
     bool Logger::is_valid() const {
