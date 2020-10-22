@@ -37,12 +37,11 @@ namespace log {
     protected:
         explicit BaseLogger(std::ostream& os, Level level = Level::INFO);
 
-        std::ostream& output_;
-
     private:
         void log(const std::string& msg, Level level) const;
 
         Level level_;
+        std::ostream& output_;
     };
 
 }
