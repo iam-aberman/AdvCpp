@@ -22,7 +22,7 @@ namespace log {
         BaseLogger() = delete;
         BaseLogger(const BaseLogger&) = delete;
 
-        virtual ~BaseLogger() = default;
+        virtual ~BaseLogger();
 
         void debug(const std::string& msg);
         void info(const std::string& msg);

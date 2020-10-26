@@ -7,6 +7,10 @@ namespace log {
     {
     }
 
+    BaseLogger::~BaseLogger() {
+        output_.flush();
+    }
+
     void BaseLogger::debug(const std::string& msg) {
         log("[DBG] " + msg, Level::DEBUG);
     }

@@ -23,10 +23,6 @@ namespace log {
             }
         }
 
-        ~FileLogger() override {
-            output_file_.close();
-        }
-
     private:
         std::ofstream output_file_;
     };
