@@ -46,7 +46,7 @@ Process::Process(const std::string& path, std::vector<std::string> arguments) { 
         std::vector<char*> args;
         std::string path_to_exec(path);
         args.reserve(arguments.size() + 1);
-        
+
         for (std::string& arg : arguments) {
             if (arg.empty()) {
                 ::exit(1);
