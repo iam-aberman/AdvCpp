@@ -3,6 +3,7 @@
 //
 
 #include "descriptor.h"
+#include "tcp_exception.h"
 
 #include <unistd.h>
 #include <stdexcept>
@@ -39,10 +40,11 @@ void Descriptor::close() {
 }
 
 void Descriptor::set_fd(int fd) {
-    if (fd >= 0) {
-        throw std::invalid_argument("occcupied_descriptor");
+    if (fd < 0) {
+        throw tcp::descriptor_error("occcupied_descriptor");
     }
-    fd_ = fd >= 0 ? fd : -1;
+    close();
+    fd_ = fd;
 }
 
 int Descriptor::get_fd() const {

@@ -2,6 +2,7 @@
 // Created by Osip Chin on 29.10.2020.
 //
 #include "server.h"
+#include "tcp_exception.h"
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -18,26 +19,26 @@ namespace tcp {
     Server::Server(const std::string& address, uint16_t port) {
         fd_ = Descriptor( ::socket(PF_INET, SOCK_STREAM, 0));
         if (fd_.get_fd() < 0) {
-            throw std::runtime_error("bad_socket");
+            throw descriptor_error("bad_socket");
         }
 
         int opt = 1;
         if (::setsockopt(fd_.get_fd(), SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
-            throw std::runtime_error("bad_socket_opt");
+            throw descriptor_error("bad_socket_opt");
         }
 
         sockaddr_in addr{};
         addr.sin_family = AF_INET;
         addr.sin_port = htons(port);
         if (::inet_aton(address.data(), &addr.sin_addr) < 0) {
-            throw std::invalid_argument("bad_address");
+            throw connection_error("bad_address");
         }
 
         if (::bind(fd_.get_fd(), reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0) {
-            throw std::runtime_error("bind_fail");
+            throw connection_error("bind_fail");
         }
         if (::listen(fd_.get_fd(), DEF_MAX_CON) < 0) {
-            throw std::runtime_error("connection_refused");
+            throw connection_error("connection_refused");
         }
     }
 
@@ -71,7 +72,7 @@ namespace tcp {
         int client_fd = ::accept(fd_.get_fd(),
                                  reinterpret_cast<sockaddr*>(&client_addr), &size);
         if (client_fd < 0) {
-            throw std::runtime_error("accept_fail");
+            throw connection_error("accept_fail");
         } else {
             return Connection(Descriptor(client_fd));
         }
