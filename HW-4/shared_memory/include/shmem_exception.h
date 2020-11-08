@@ -19,6 +19,10 @@ namespace shmem {
         using std::runtime_error::runtime_error;
     };
 
+    class out_of_range : public std::out_of_range {
+        using std::out_of_range::out_of_range;
+    };
+
 } // namespace shmem
 
 #endif //SHMEM_EXCEPTION_H

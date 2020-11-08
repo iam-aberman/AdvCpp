@@ -2,7 +2,7 @@
 // Created by Osip Chin on 06.11.2020.
 //
 
-#include "shmem_semaphore.h"
+#include "shared_semaphore.h"
 #include "shmem_exception.h"
 
 #include <iostream>
