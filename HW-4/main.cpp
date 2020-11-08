@@ -1,37 +1,54 @@
+#include "shared_map.h"
 #include <iostream>
 #include <unistd.h>
-#include <sys/mman.h>
 #include <sys/wait.h>
-#include "shmem_semaphore.h"
-
 
 int main() {
+    using namespace shmem;
 
-    void* shmem = ::mmap(nullptr, 1024, PROT_READ | PROT_WRITE,
-                         MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-    auto* sem = new (shmem) shmem::Semaphore;
+    {
+        SharedMap<int, std::string> int_to_string(BlockCount(16), BlockSize(128));
 
-    auto* buffer = new (static_cast<char*>(shmem) + sizeof(shmem::Semaphore)) int;
+        pid_t child = ::fork();
+        if (child < 0) {
+            std::cerr << "Fork failed!\n";
+            return -1;
+        }
 
-
-    pid_t child = ::fork();
-    if (child > 0) { // Parent
-        sem->wait();
-        *buffer = 7777;
-        ::sleep(10);
-
-        std::cerr << *buffer << std::endl;
-        sem->post();
-
-        ::waitpid(child, nullptr, 0);
-    } else {
-        ::sleep(5);
-        sem->wait();
-        *buffer = 8888;
-        sem->post();
-        return 0;
+        if (child > 0) {
+            std::cout << "[PARENT] Insert {7, \"This string contains more than 24 characters!\"}\n";
+            int_to_string.insert(7, "This string contains more than 24 characters!");
+            ::waitpid(child, nullptr, 0);
+        } else {
+            ::sleep(1);
+            std::cout << "[CHILD] SharedMap[7] = \"" +
+                         int_to_string.get(7) + "\"\n";
+            return 0;
+        }
     }
 
-    munmap(shmem, 1024);
+    {
+        SharedMap<std::string, int> string_to_int(BlockCount(16), BlockSize(128));
+
+        pid_t child = ::fork();
+        if (child < 0) {
+            std::cerr << "Fork failed!\n";
+            return -1;
+        }
+
+        if (child > 0) {
+            ::sleep(1);
+            std::cout << "[PARENT] SharedMap[\"This string contains more "
+                         "than 24 characters!\"] = " <<
+                         string_to_int.get("This string contains more than 24 characters!") <<
+                         "\n";
+            ::waitpid(child, nullptr, 0);
+        } else {
+            std::cout << "[CHILD] Insert {\"This string contains more than 24 characters!\", 7}\n";
+            string_to_int.insert("This string contains more than 24 characters!", 7);
+            return 0;
+        }
+    }
+
     return 0;
 }
