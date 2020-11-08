@@ -108,6 +108,7 @@ namespace shmem {
 
     template <typename Key, typename Value>
     void SharedMap<Key, Value>::remove(const Key& key) {
+        SemLock lock(*sem_);
         if (map_->count(get_key_(key)) > 0) {
             map_->erase(get_key_(key));
         }
@@ -115,6 +116,7 @@ namespace shmem {
 
     template <typename Key, typename Value>
     Value SharedMap<Key, Value>::get(const Key& key) const {
+        SemLock lock(*sem_);
         try {
             auto ret_value = Value(map_->at(get_key_(key)));
             return ret_value;
