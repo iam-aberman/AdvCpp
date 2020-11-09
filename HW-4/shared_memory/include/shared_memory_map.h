@@ -1,7 +1,6 @@
 //
 // Created by Osip Chin on 07.11.2020.
 //
-
 #ifndef SHARED_MEMORY_MAP_H
 #define SHARED_MEMORY_MAP_H
 
@@ -27,6 +26,6 @@ namespace shmem {
         size_t size_;
     };
 
-}
+} // namespace shmem
 
 #endif //SHARED_MEMORY_MAP_H

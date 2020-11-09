@@ -1,7 +1,6 @@
 //
 // Created by Osip Chin on 06.11.2020.
 //
-
 #ifndef SHMEM_SEMAPHORE_H
 #define SHMEM_SEMAPHORE_H
 
@@ -14,11 +13,11 @@ namespace shmem {
         Semaphore();
         ~Semaphore();
 
-        Semaphore(const Semaphore &) = delete;
-        Semaphore &operator=(const Semaphore &) = delete;
+        Semaphore(const Semaphore&) = delete;
+        Semaphore &operator=(const Semaphore&) = delete;
 
-        Semaphore(Semaphore &&) = delete;
-        Semaphore &operator=(Semaphore &&) = delete;
+        Semaphore(Semaphore&&) = delete;
+        Semaphore &operator=(Semaphore&&) = delete;
 
         void wait();
         void post();

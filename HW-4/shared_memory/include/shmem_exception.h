@@ -1,7 +1,6 @@
 //
 // Created by Osip Chin on 06.11.2020.
 //
-
 #ifndef SHMEM_EXCEPTION_H
 #define SHMEM_EXCEPTION_H
 

@@ -1,7 +1,6 @@
 //
 // Created by Osip Chin on 06.11.2020.
 //
-
 #ifndef SHMEM_SEM_LOCK_H
 #define SHMEM_SEM_LOCK_H
 

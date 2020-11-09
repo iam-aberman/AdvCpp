@@ -1,7 +1,6 @@
 //
 // Created by Osip Chin on 07.11.2020.
 //
-
 #ifndef SHARED_MAP_H
 #define SHARED_MAP_H
 
@@ -11,8 +10,8 @@
 #include "shmem_sem_lock.h"
 #include "shmem_alloc.h"
 
-#include <tuple>
 #include <type_traits>
+#include <tuple>
 #include <map>
 
 namespace shmem {
@@ -135,7 +134,7 @@ namespace shmem {
     }
 
     template <typename Key, typename Value>
-    typename SharedMap<Key, Value>::Value_ SharedMap<Key, Value>::get_value_(const Value &value) const {
+    typename SharedMap<Key, Value>::Value_ SharedMap<Key, Value>::get_value_(const Value& value) const {
         if constexpr (std::is_pod_v<Value>) {
             return value;
         } else {
@@ -143,6 +142,6 @@ namespace shmem {
         }
     }
 
-}
+} // namespace shmem
 
 #endif //SHARED_MAP_H

@@ -1,6 +1,3 @@
-//
-// Created by Osip Chin
-//
 #ifndef SHMEM_ALLOC_H
 #define SHMEM_ALLOC_H
 
