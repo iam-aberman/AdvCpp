@@ -26,9 +26,7 @@ Descriptor::Descriptor(Descriptor&& tmp) noexcept : fd_(tmp.fd_) {
 }
 
 Descriptor& Descriptor::operator=(Descriptor&& tmp) noexcept {
-    close();
-    fd_ = tmp.fd_;
-    tmp.fd_ = -1;
+    std::swap(this->fd_, tmp.fd_);
     return *this;
 }
 

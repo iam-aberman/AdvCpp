@@ -29,9 +29,8 @@ namespace tcp {
             throw connection_error("bad_address");
         }
 
-        int connection_status =
-                ::connect(fd_.get_fd(), reinterpret_cast<sockaddr*>(&addr), sizeof(addr));
-        if (connection_status < 0) {
+
+        if (::connect(fd_.get_fd(), reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0) {
             throw connection_error("connection_fail");
         }
     }
