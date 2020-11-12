@@ -10,7 +10,7 @@ namespace shmem {
 
     class MemoryMap {
     public:
-        MemoryMap(size_t size);
+        explicit MemoryMap(size_t size);
         ~MemoryMap();
 
         MemoryMap(const MemoryMap&) = delete;
@@ -19,7 +19,7 @@ namespace shmem {
         MemoryMap(MemoryMap&&) = delete;
         MemoryMap& operator=(MemoryMap&&) = delete;
 
-        void* get();
+        char* get();
 
     private:
         void* mem_;

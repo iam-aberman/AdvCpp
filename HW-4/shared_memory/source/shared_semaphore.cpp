@@ -10,7 +10,7 @@ namespace shmem {
 
     Semaphore::Semaphore() {
         if (::sem_init(&sem_, 1, 1) < 0) {
-            throw semaphore_error("sem_init_fail");
+            throw SemaphoreError("sem_init_fail");
         }
     }
 

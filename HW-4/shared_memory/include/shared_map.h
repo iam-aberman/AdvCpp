@@ -18,14 +18,14 @@ namespace shmem {
 
     // Utils
     struct BlockCount {
-        BlockCount(size_t val) : val_(val)
+        explicit BlockCount(size_t val) : val_(val)
         {
         }
         size_t val_;
     };
 
     struct BlockSize {
-        BlockSize(size_t val) : val_(val)
+        explicit BlockSize(size_t val) : val_(val)
         {
         }
         size_t val_;
@@ -36,80 +36,89 @@ namespace shmem {
     public:
         using SharedString = std::basic_string<char, std::char_traits<char>, ShAlloc<char>>;
 
-        using Key_ = std::conditional_t<std::is_pod_v<Key>, Key, SharedString>;
-        using Value_ = std::conditional_t<std::is_pod_v<Value>, Value, SharedString>;
+        template <typename T>
+        using T_ = std::conditional_t<std::is_same_v<T, std::string>, SharedString, T>;
 
-        using Node  = std::pair<Key_, Value_>;
+        using Key_ = T_<Key>;
+        using Value_ = T_<Value>;
+
+        using Node  = std::pair<const Key_, Value_>;
         using ShMap = std::map<Key_, Value_, std::less<Key_>, ShAlloc<Node>>;
 
         SharedMap(BlockCount block_count, BlockSize block_size);
-        ~SharedMap();
+        ~SharedMap() = default;
 
+        void delete_map();
         void update(const Key& key, const Value& value);
         void insert(const Key& key, const Value& value);
         void remove(const Key& key);
         Value get(const Key& key) const;
 
     private:
-        Key_ get_key_(const Key& key) const;
-        Value_ get_value_(const Value& value) const;
+        template <typename T>
+        T_<T> get_(const T& t) const;
 
-        MemoryMap memory_;
+        MemoryMap* memory_;
         ShMap* map_;
         Semaphore* sem_;
+        ShMemState* state_;
     };
 
     template <typename Key, typename Value>
-    SharedMap<Key, Value>::SharedMap(BlockCount block_count, BlockSize block_size) :
-    memory_(sizeof(Semaphore) + sizeof(ShMemState) +
-            sizeof(ShMap) + block_count.val_ + (block_count.val_ * block_size.val_)) {
+    SharedMap<Key, Value>::SharedMap(BlockCount block_count, BlockSize block_size) {
+        // Memory map
+        memory_ = new MemoryMap(sizeof(Semaphore) + sizeof(ShMemState) +
+                                sizeof(ShMap) + block_count.val_ + (block_count.val_ * block_size.val_));
+
         // Semaphore
-        sem_ = new (memory_.get()) Semaphore;
+        sem_ = new (memory_->get()) Semaphore;
 
         // ShMemState
-        auto* state = new (static_cast<char*>(memory_.get()) + sizeof(Semaphore)) ShMemState;
-        state->blocks_count = block_count.val_;
-        state->block_size   = block_size.val_;
+        state_ = new (memory_->get() + sizeof(Semaphore)) ShMemState;
+        state_->blocks_count = block_count.val_;
+        state_->block_size   = block_size.val_;
 
         // Block_table
-        auto* used_blocks_table = static_cast<char*>(memory_.get()) +
+        char* used_blocks_table = memory_->get() +
                                   sizeof(Semaphore) + sizeof(ShMemState);
         ::memset(used_blocks_table, FREE_BLOCK, block_count.val_);
 
-        state->used_blocks_table = used_blocks_table;
-        ShAlloc<ShMap> allocator(state);
+        state_->used_blocks_table = used_blocks_table;
+        ShAlloc<ShMap> allocator(state_);
 
         map_ = new (used_blocks_table + block_count.val_) ShMap(allocator);
-        state->first_block = used_blocks_table + block_count.val_ + sizeof(ShMap);
+        state_->first_block = used_blocks_table + block_count.val_ + sizeof(ShMap);
     }
 
     template <typename Key, typename Value>
-    SharedMap<Key, Value>::~SharedMap() {
+    void SharedMap<Key, Value>::delete_map() {
         map_->~ShMap();
         sem_->~Semaphore();
+        memory_->~MemoryMap();
+        delete memory_;
     }
 
     template <typename Key, typename Value>
     void SharedMap<Key, Value>::update(const Key& key, const Value& value) {
         SemLock lock(*sem_);
         try {
-            map_->at(get_key_(key)) = get_value_(value);
+            map_->at(get_(key)) = get_(value);
         } catch (const std::out_of_range&) {
-            throw out_of_range("update_out_of_range");
+            throw OutOfRange("update_out_of_range");
         }
     }
 
     template <typename Key, typename Value>
     void SharedMap<Key, Value>::insert(const Key& key, const Value& value) {
         SemLock lock(*sem_);
-        map_->insert( {get_key_(key), get_value_(value)} );
+        map_->insert( {get_(key), get_(value)} );
     }
 
     template <typename Key, typename Value>
     void SharedMap<Key, Value>::remove(const Key& key) {
         SemLock lock(*sem_);
-        if (map_->count(get_key_(key)) > 0) {
-            map_->erase(get_key_(key));
+        if (map_->count(get_(key)) > 0) {
+            map_->erase(get_(key));
         }
     }
 
@@ -117,28 +126,19 @@ namespace shmem {
     Value SharedMap<Key, Value>::get(const Key& key) const {
         SemLock lock(*sem_);
         try {
-            auto ret_value = Value(map_->at(get_key_(key)));
-            return ret_value;
+            return static_cast<Value>(map_->at(get_(key)));
         } catch (const std::out_of_range&) {
-            throw out_of_range("get_out_of_range");
+            throw OutOfRange("get_out_of_range");
         }
     }
 
     template <typename Key, typename Value>
-    typename SharedMap<Key, Value>::Key_ SharedMap<Key, Value>::get_key_(const Key& key) const {
-        if constexpr (std::is_pod_v<Key>) {
-            return key;
+    template <typename T>
+    SharedMap<Key, Value>::T_<T> SharedMap<Key, Value>::get_(const T& t) const {
+        if constexpr (std::is_same_v<T, T_<T>>) {
+            return t;
         } else {
-            return Key_(key, map_->get_allocator());
-        }
-    }
-
-    template <typename Key, typename Value>
-    typename SharedMap<Key, Value>::Value_ SharedMap<Key, Value>::get_value_(const Value& value) const {
-        if constexpr (std::is_pod_v<Value>) {
-            return value;
-        } else {
-            return Value_(value, map_->get_allocator());
+            return T_<T>(t, map_->get_allocator());
         }
     }
 

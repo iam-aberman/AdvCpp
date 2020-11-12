@@ -25,6 +25,7 @@ int main() {
                          int_to_string.get(7) + "\"\n";
             return 0;
         }
+        int_to_string.delete_map();
     }
 
     {
@@ -48,6 +49,7 @@ int main() {
             string_to_int.insert("This string contains more than 24 characters!", 7);
             return 0;
         }
+        string_to_int.delete_map();
     }
 
     return 0;

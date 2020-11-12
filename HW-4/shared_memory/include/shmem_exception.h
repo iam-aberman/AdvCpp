@@ -8,18 +8,22 @@
 
 namespace shmem {
 
-    class semaphore_error : public std::runtime_error {
-    public:
+    class ShError : public std::runtime_error {
         using std::runtime_error::runtime_error;
     };
 
-    class mem_map_error : public std::runtime_error {
+    class SemaphoreError : public ShError {
     public:
-        using std::runtime_error::runtime_error;
+        using ShError::ShError;
     };
 
-    class out_of_range : public std::out_of_range {
-        using std::out_of_range::out_of_range;
+    class MemMapError : public ShError {
+    public:
+        using ShError::ShError;
+    };
+
+    class OutOfRange : public ShError {
+        using ShError::ShError;
     };
 
 } // namespace shmem
