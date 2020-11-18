@@ -1,4 +1,6 @@
-//
-// Created by Osip Chin on 18.11.2020.
-//
+#include <iostream>
 
+int main(int argc, char* argv[]) {
+    std::cout << "Hello, ServiceListener!" << std::endl;
+    return 0;
+}
