@@ -25,6 +25,4 @@ private:
     int fd_;
 };
 
-
-
 #endif //DESCRIPTOR_H

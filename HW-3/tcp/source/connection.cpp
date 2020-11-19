@@ -19,19 +19,19 @@ namespace tcp {
     Connection::Connection(const std::string& address, uint16_t port) {
         fd_ = Descriptor(::socket(PF_INET, SOCK_STREAM, 0));
         if (fd_.get_fd() < 0) {
-            throw descriptor_error("bad_socket");
+            throw DescriptorError("bad_socket");
         }
 
         sockaddr_in addr{};
         addr.sin_family = AF_INET;
         addr.sin_port = htons(port);
         if (::inet_aton(address.data(), &addr.sin_addr) < 0) {
-            throw connection_error("bad_address");
+            throw ConnectionError("bad_address");
         }
 
 
         if (::connect(fd_.get_fd(), reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0) {
-            throw connection_error("connection_fail");
+            throw ConnectionError("connection_fail");
         }
     }
 
@@ -47,7 +47,7 @@ namespace tcp {
 
     void Connection::connect(const std::string& address, uint16_t port) {
         if (is_valid()) {
-            throw connection_error("occupied_connection");
+            throw ConnectionError("occupied_connection");
         }
 
         Connection tmp(address, port);
@@ -60,14 +60,14 @@ namespace tcp {
 
     size_t Connection::write(const void* data, size_t len) {
         if (!is_valid()) {
-            throw descriptor_error("invalid_descriptor");
+            throw DescriptorError("invalid_descriptor");
         }
 
         ssize_t written = ::write(fd_.get_fd(), data, len);
         if (written >= 0) {
             return static_cast<size_t>(written);
         } else {
-            throw descriptor_error("write_fail");
+            throw DescriptorError("write_fail");
         }
     }
 
@@ -80,14 +80,14 @@ namespace tcp {
 
     size_t Connection::read(void* data, size_t len) {
         if (!is_valid()) {
-            throw descriptor_error("invalid_descriptor");
+            throw DescriptorError("invalid_descriptor");
         }
 
         ssize_t read = ::read(fd_.get_fd(), data, len);
         if (read >= 0) {
             return static_cast<size_t>(read);
         } else {
-            throw descriptor_error("read_fail");
+            throw DescriptorError("read_fail");
         }
     }
 
@@ -96,7 +96,7 @@ namespace tcp {
         while (offset != len) {
             size_t step = read(static_cast<char*>(data) + offset, len - offset);
             if (step == 0) {
-                throw descriptor_error("read_exact_fail");
+                throw DescriptorError("read_exact_fail");
             }
             offset += step;
         }
@@ -110,7 +110,7 @@ namespace tcp {
         timeval timeout{.tv_sec = 0, .tv_usec = static_cast<int>(ms)};
         if (::setsockopt(fd_.get_fd(), SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout)) < 0 ||
             ::setsockopt(fd_.get_fd(), SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
-            throw descriptor_error("bad_sock_opt");
+            throw DescriptorError("bad_sock_opt");
         }
     }
 

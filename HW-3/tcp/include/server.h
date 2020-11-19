@@ -37,7 +37,6 @@ namespace tcp {
         Descriptor fd_;
     };
 
-
 }
 
 #endif //SERVER_H

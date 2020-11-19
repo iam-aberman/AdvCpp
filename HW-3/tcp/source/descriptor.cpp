@@ -39,7 +39,7 @@ void Descriptor::close() {
 
 void Descriptor::set_fd(int fd) {
     if (fd < 0) {
-        throw tcp::descriptor_error("invalid_descriptor");
+        throw tcp::DescriptorError("invalid_descriptor");
     }
     close();
     fd_ = fd;
