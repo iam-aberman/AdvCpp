@@ -8,12 +8,12 @@
 #include <stdexcept>
 
 namespace tcp {
-    class descriptor_error : public std::runtime_error {
+    class DescriptorError : public std::runtime_error {
     public:
         using std::runtime_error::runtime_error;
     };
 
-    class connection_error : public std::runtime_error {
+    class ConnectionError : public std::runtime_error {
     public:
         using std::runtime_error::runtime_error;
     };

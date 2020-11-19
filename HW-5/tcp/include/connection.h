@@ -33,6 +33,7 @@ namespace tcp {
         void read_exact(void* data, size_t len);
 
         void set_timeout(size_t ms);
+        Descriptor& get_fd();
 
         friend Server;
 

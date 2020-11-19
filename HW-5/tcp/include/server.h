@@ -26,17 +26,18 @@ namespace tcp {
         Server(Server&& tmp) noexcept;
         Server& operator=(Server&& tmp) noexcept;
 
-        void listen(std::string& address, uint16_t port);
+        void listen(const std::string& address, uint16_t port);
         void close();
 
         Connection accept();
+
+        Descriptor& get_fd();
 
     private:
         bool is_valid() const;
 
         Descriptor fd_;
     };
-
 
 }
 
