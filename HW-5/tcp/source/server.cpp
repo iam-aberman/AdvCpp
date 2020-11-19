@@ -17,7 +17,7 @@ namespace tcp {
     }
 
     Server::Server(const std::string& address, uint16_t port) {
-        fd_ = Descriptor( ::socket(PF_INET, SOCK_STREAM, 0));
+        fd_ = Descriptor( ::socket(PF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0));
         if (fd_.get_fd() < 0) {
             throw DescriptorError("bad_socket");
         }
