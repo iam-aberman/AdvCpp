@@ -27,7 +27,6 @@ namespace net {
         void del(Descriptor& fd);
 
         std::vector<::epoll_event> wait();
-
     private:
         Descriptor epoll_fd_;
         size_t max_size_;

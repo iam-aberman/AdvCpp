@@ -15,6 +15,11 @@ namespace net {
         using Exception::Exception;
     };
 
+    class ServiceFin : public Exception {
+    public:
+        using Exception::Exception;
+    };
+
 }
 
 #endif //NET_EXCEPTION_H
