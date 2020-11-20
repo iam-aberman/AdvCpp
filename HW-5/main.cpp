@@ -12,7 +12,8 @@ int main(int argc, char* argv[]) {
     int port = 7070;
 
     net::Service service;
-    service.set_listener(std::make_unique<net::ExampleListener>());
+    std::shared_ptr<net::IServiceListener> listener = std::make_shared<net::ExampleListener>();
+    service.set_listener(listener);
     service.open(address, port);
 
     pid_t fork = ::fork();

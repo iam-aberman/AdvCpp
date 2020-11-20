@@ -20,6 +20,6 @@ namespace net {
         using Exception::Exception;
     };
 
-}
+} // namespace net
 
 #endif //NET_EXCEPTION_H

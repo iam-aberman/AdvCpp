@@ -12,7 +12,7 @@ namespace net {
     class Service {
     public:
         Service() = default;
-        explicit Service(std::unique_ptr<IServiceListener>&& listener);
+        explicit Service(std::weak_ptr<IServiceListener> listener);
 
         Service(const Service&) = delete;
         Service& operator=(const Service&) = delete;
@@ -20,16 +20,13 @@ namespace net {
         Service(Service&&) = default;
         Service& operator=(Service&&) = default;
 
-        void set_listener(std::unique_ptr<IServiceListener>&& listener);
+        void set_listener(std::weak_ptr<IServiceListener> listener);
         void open(const std::string& address, int port);
         void close();
 
-        static void subscribe_to(BufferedConnection& con, uint32_t events);
-        static void unsubscribe_from(BufferedConnection& con, uint32_t events);
-
         void run();
     private:
-        std::unique_ptr<IServiceListener> listener_;
+        std::weak_ptr<IServiceListener> listener_;
 
         tcp::Server server_;
         EPoll epoll_;
@@ -37,6 +34,6 @@ namespace net {
 
     };
 
-}
+} // namespace net
 
 #endif //SERVICE_H

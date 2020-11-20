@@ -3,10 +3,16 @@
 
 namespace net {
 
-    EPoll::EPoll() : max_size_(DEF_EPOLL_SIZE){
+    EPoll::EPoll(size_t max) : max_size_(max){
         epoll_fd_ = Descriptor {::epoll_create(1)};
         if (epoll_fd_.get_fd() < 0) {
             throw EpollError("epoll_init_fail");
+        }
+    }
+
+    void EPoll::set_max_size(size_t new_size) {
+        if (new_size > 0) {
+            max_size_ = new_size;
         }
     }
 
@@ -46,4 +52,4 @@ namespace net {
         return ret_events;
     }
 
-}
+} // namespace net

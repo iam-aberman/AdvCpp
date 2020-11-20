@@ -40,11 +40,11 @@ namespace net {
             std::cerr << "Some error on #" << con.get_fd().get_fd() << std::endl;
         }
         void OnClose(BufferedConnection& con) override {
-            std::cerr << "RDHUP on #" << con.get_fd().get_fd() << std::endl;
+            std::cout << "RDHUP on #" << con.get_fd().get_fd() << std::endl;
             throw ServiceFin("");
         }
     };
 
-}
+} // namespace net
 
 #endif //SERVICE_LISTENER_H

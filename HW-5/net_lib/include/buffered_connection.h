@@ -44,6 +44,6 @@ namespace net {
         uint32_t epoll_flags_;
     };
 
-}
+} // namespace net
 
 #endif //BUFFERED_CONNECTION_H
