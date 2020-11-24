@@ -43,7 +43,7 @@ namespace net {
         connection_.close();
     }
 
-    size_t BufferedConnection::read_from_buf() {
+    size_t BufferedConnection::read_to_buf() {
         read_buf_.resize(read_buf_.size() + DEF_BUF_SIZE);
         size_t acquired =
                 connection_.read(
@@ -53,7 +53,7 @@ namespace net {
         return acquired;
     }
 
-    size_t BufferedConnection::write_to_buf() {
+    size_t BufferedConnection::write_from_buf() {
         if (!write_buf_.empty()) {
             size_t written =
                     connection_.write(

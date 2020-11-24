@@ -31,8 +31,8 @@ namespace net {
         void close();
     private:
         friend class Service;
-        size_t read_from_buf();
-        size_t write_to_buf();
+        size_t read_to_buf();
+        size_t write_from_buf();
 
         // Buffers
         std::string read_buf_,

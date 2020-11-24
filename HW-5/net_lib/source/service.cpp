@@ -54,14 +54,14 @@ namespace net {
 
                     } else {
                         BufferedConnection& cur_con = active_connections_.at(event.data.fd);
-                        cur_con.read_from_buf();
+                        cur_con.read_to_buf();
                         listener_.lock()->OnReadAvailible(active_connections_.at(event.data.fd));
                     }
 
                 } else if (event.events & EPOLLOUT) {
                     BufferedConnection& cur_con = active_connections_.at(event.data.fd);
                     if (!cur_con.get_write_buf().empty()) {
-                        cur_con.write_to_buf();
+                        cur_con.write_from_buf();
                     }
 
                     if (cur_con.get_write_buf().empty()) {
