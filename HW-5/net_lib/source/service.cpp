@@ -19,7 +19,18 @@ namespace net {
         server_.close();
     }
 
+    void Service::close_connection(BufferedConnection& con) {
+        int key = con.get_fd().get_fd();
+        if (active_connections_.count(key) > 0) {
+            active_connections_.erase(key);             // This will close the associated connection
+        }
+    }
+
     void Service::run() {
+        if (listener_.expired()) {
+            throw ServiceError("no_listener_set");
+        }
+
         while (true) {
             std::vector<::epoll_event> ret_events = epoll_.wait();
 
@@ -43,14 +54,14 @@ namespace net {
 
                     } else {
                         BufferedConnection& cur_con = active_connections_.at(event.data.fd);
-                        cur_con.read_();
+                        cur_con.read_from_buf();
                         listener_.lock()->OnReadAvailible(active_connections_.at(event.data.fd));
                     }
 
                 } else if (event.events & EPOLLOUT) {
                     BufferedConnection& cur_con = active_connections_.at(event.data.fd);
                     if (!cur_con.get_write_buf().empty()) {
-                        cur_con.write_();
+                        cur_con.write_to_buf();
                     }
 
                     if (cur_con.get_write_buf().empty()) {

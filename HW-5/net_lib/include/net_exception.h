@@ -20,6 +20,11 @@ namespace net {
         using Exception::Exception;
     };
 
+    class ServiceError : public Exception {
+    public:
+        using Exception::Exception;
+    };
+
 } // namespace net
 
 #endif //NET_EXCEPTION_H

@@ -43,21 +43,23 @@ namespace net {
         connection_.close();
     }
 
-    size_t BufferedConnection::read_() {
+    size_t BufferedConnection::read_from_buf() {
         read_buf_.resize(read_buf_.size() + DEF_BUF_SIZE);
         size_t acquired =
                 connection_.read(
                 read_buf_.data() + (read_buf_.size() - DEF_BUF_SIZE),
                 DEF_BUF_SIZE);
         read_buf_.resize(read_buf_.size() - DEF_BUF_SIZE + acquired);
+        return acquired;
     }
 
-    size_t BufferedConnection::write_() {
+    size_t BufferedConnection::write_to_buf() {
         if (!write_buf_.empty()) {
             size_t written =
                     connection_.write(
                     write_buf_.data(), write_buf_.size());
             write_buf_ = write_buf_.substr(written);
+            return written;
         }
     }
 

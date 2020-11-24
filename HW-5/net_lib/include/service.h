@@ -22,8 +22,9 @@ namespace net {
 
         void set_listener(std::weak_ptr<IServiceListener> listener);
         void open(const std::string& address, int port);
+        void close_connection(BufferedConnection& con);
         void close();
-
+        
         void run();
     private:
         std::weak_ptr<IServiceListener> listener_;

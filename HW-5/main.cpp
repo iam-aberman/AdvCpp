@@ -3,7 +3,7 @@
 #include <sys/wait.h>
 #include "service.h"
 #include "connection.h"
-#include "service_listener.h"
+#include "example_listener.h"
 
 
 int main(int argc, char* argv[]) {
@@ -12,7 +12,7 @@ int main(int argc, char* argv[]) {
     int port = 7070;
 
     net::Service service;
-    std::shared_ptr<net::IServiceListener> listener = std::make_shared<net::ExampleListener>();
+    auto listener = std::make_shared<ExampleListener>();
     service.set_listener(listener);
     service.open(address, port);
 
