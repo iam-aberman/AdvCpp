@@ -12,11 +12,17 @@
 
 namespace tcp {
 
-    Server::Server() : fd_(Descriptor())            // Invalid fd_ = -1;
-    {
-    }
+    constexpr uint16_t DEF_MAX_CON = 1024;
 
     Server::Server(const std::string& address, uint16_t port) {
+        listen(address, port);
+    }
+
+    void Server::listen(const std::string& address, uint16_t port) {
+        if (is_valid()) {
+            return;
+        }
+
         fd_ = Descriptor( ::socket(PF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0));
         if (fd_.get_fd() < 0) {
             throw DescriptorError("bad_socket");
@@ -40,25 +46,6 @@ namespace tcp {
         if (::listen(fd_.get_fd(), DEF_MAX_CON) < 0) {
             throw ConnectionError("connection_refused");
         }
-    }
-
-    Server::Server(Server&& tmp) noexcept : fd_(std::move(tmp.fd_))
-    {
-    }
-
-    Server& Server::operator=(Server&& tmp) noexcept {
-        close();
-        fd_ = std::move(tmp.fd_);
-        return *this;
-    }
-
-    void Server::listen(const std::string& address, uint16_t port) {
-        if (is_valid()) {
-            return;
-        }
-
-        Server tmp(address, port);
-        std::swap(*this, tmp);
     }
 
     void Server::close() {

@@ -34,7 +34,7 @@ namespace net {
         while (true) {
             std::vector<::epoll_event> ret_events = epoll_.wait();
 
-            for (auto& event : ret_events) {
+            for (::epoll_event& event : ret_events) {
                 if (event.events & EPOLLERR)  {
                     listener_.lock()->OnError(active_connections_.at(event.data.fd));
                     active_connections_.erase(event.data.fd);

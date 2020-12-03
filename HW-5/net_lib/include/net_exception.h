@@ -14,6 +14,10 @@ namespace net {
     public:
         using Exception::Exception;
     };
+    
+    class BufConnectionError : public Exception {
+        using Exception::Exception;
+    };
 
     class ServiceFin : public Exception {
     public:

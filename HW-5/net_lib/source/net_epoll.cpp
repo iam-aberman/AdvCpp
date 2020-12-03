@@ -3,20 +3,32 @@
 
 namespace net {
 
-    EPoll::EPoll(size_t max) : max_size_(max){
-        epoll_fd_ = Descriptor {::epoll_create(1)};
-        if (epoll_fd_.get_fd() < 0) {
-            throw EpollError("epoll_init_fail");
-        }
+    constexpr size_t DEF_EPOLL_SIZE = 1024u;
+
+    EPoll::EPoll() : max_size_(DEF_EPOLL_SIZE),
+                     epoll_fd_(Descriptor(::epoll_create(1)))
+    {
+    }
+
+    EPoll::EPoll(EPoll&& tmp) noexcept {
+        epoll_fd_ = std::move(tmp.epoll_fd_);
+        max_size_ = DEF_EPOLL_SIZE;
+    }
+    EPoll& EPoll::operator=(EPoll&& tmp) noexcept {
+        epoll_fd_ = std::move(tmp.epoll_fd_);
+        max_size_ = DEF_EPOLL_SIZE;
+        return *this;
     }
 
     void EPoll::set_max_size(size_t new_size) {
         if (new_size > 0) {
             max_size_ = new_size;
+        } else {
+            throw EpollError("invalid_new_size");
         }
     }
 
-    void EPoll::add(Descriptor& fd, uint32_t events) {
+    void EPoll::add(const Descriptor& fd, uint32_t events) {
         ::epoll_event event{};
         event.events = events;
         event.data.fd = fd.get_fd();
@@ -26,7 +38,7 @@ namespace net {
         }
     }
 
-    void EPoll::mod(Descriptor& fd, uint32_t events) {
+    void EPoll::mod(const Descriptor& fd, uint32_t events) {
         ::epoll_event event{};
         event.events = events;
         event.data.fd = fd.get_fd();
@@ -36,7 +48,7 @@ namespace net {
         }
     }
 
-    void EPoll::del(Descriptor& fd) {
+    void EPoll::del(const Descriptor& fd) {
         if (::epoll_ctl(epoll_fd_.get_fd(), EPOLL_CTL_DEL, fd.get_fd(), nullptr) < 0) {
             throw EpollError("epoll_mod_fail");
         }

@@ -1,11 +1,14 @@
 #include "buffered_connection.h"
+#include "net_exception.h"
 
 namespace net {
     constexpr size_t DEF_BUF_SIZE = 256;
 
     BufferedConnection::BufferedConnection(tcp::Connection&& tmp, EPoll* epoll) :
-    connection_(std::move(tmp)), epoll_(epoll), epoll_flags_(0u)
-    {
+    connection_(std::move(tmp)), epoll_(epoll), epoll_flags_(0u) {
+        if (!epoll_) {
+            throw BufConnectionError("invalid_epoll_ptr");
+        }
     }
 
     void BufferedConnection::read(std::string& dest) {
@@ -45,11 +48,10 @@ namespace net {
 
     size_t BufferedConnection::read_to_buf() {
         read_buf_.resize(read_buf_.size() + DEF_BUF_SIZE);
-        size_t acquired =
-                connection_.read(
-                read_buf_.data() + (read_buf_.size() - DEF_BUF_SIZE),
-                DEF_BUF_SIZE);
+        char* dest = read_buf_.data() + (read_buf_.size() - DEF_BUF_SIZE);
+        size_t acquired = connection_.read(dest, DEF_BUF_SIZE);
         read_buf_.resize(read_buf_.size() - DEF_BUF_SIZE + acquired);
+
         return acquired;
     }
 
@@ -61,6 +63,8 @@ namespace net {
             write_buf_ = write_buf_.substr(written);
             return written;
         }
+
+        return 0;
     }
 
 } // namespace net

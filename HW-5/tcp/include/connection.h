@@ -15,14 +15,8 @@ namespace tcp {
 
     class Connection {
     public:
-        Connection();
+        Connection() = default;
         Connection(const std::string& address, uint16_t port);
-
-        Connection(const Connection&) = delete;
-        Connection& operator=(const Connection&) = delete;
-
-        Connection(Connection&& tmp) noexcept;
-        Connection& operator=(Connection&& tmp) noexcept;
 
         void connect(const std::string& address, uint16_t port);
         void close();

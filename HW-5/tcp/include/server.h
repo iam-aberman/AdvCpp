@@ -13,18 +13,10 @@
 
 namespace tcp {
 
-    constexpr uint16_t DEF_MAX_CON = 1024;
-
     class Server {
     public:
-        Server();
+        Server() = default;
         Server(const std::string& address, uint16_t port);
-
-        Server(const Server&) = delete;
-        Server& operator=(const Server&) = delete;
-
-        Server(Server&& tmp) noexcept;
-        Server& operator=(Server&& tmp) noexcept;
 
         void listen(const std::string& address, uint16_t port);
         void close();

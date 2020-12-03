@@ -7,14 +7,14 @@
 
 #include <unistd.h>
 #include <stdexcept>
+#include <utility>
 
 Descriptor::Descriptor() : fd_(-1)
 {
 }
 
-Descriptor::Descriptor(int fd) :
-        fd_(fd >= 0 ? fd : -1)
-{
+Descriptor::Descriptor(int fd) {
+    set_fd(fd);
 }
 
 Descriptor::~Descriptor() {
@@ -26,7 +26,8 @@ Descriptor::Descriptor(Descriptor&& tmp) noexcept : fd_(tmp.fd_) {
 }
 
 Descriptor& Descriptor::operator=(Descriptor&& tmp) noexcept {
-    std::swap(this->fd_, tmp.fd_);
+    close();
+    fd_ = std::exchange(tmp.fd_, -1);
     return *this;
 }
 
